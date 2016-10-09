@@ -11,21 +11,22 @@ const results = {list: ['joe', 'simon'], index: {
     'simon': { name: 'Simon', email: 'simon@hotmail.com'},
     'donna': { name: 'Donna', email: 'donna@yahoo.com'},
 }}
-const update1 = {set: {joe:{name: "Joe Bloggs"}}}
-const update2 = {set: {joe:{email: "joe@example.org"}}}
+const update1 = {s: "joe", p: "name", o:"Joe Bloggs"}
+const update2 = {s: "joe", p: "email", o:"joe@example.info"}
 
 //transformers
 const fetchToTask = m => Task.of(results)
 const updateSubscription = m => new Task((_,resolve)=>{ 
+    resolve({})
     setTimeout(()=>resolve(update1), 1000) 
     setTimeout(()=>resolve(update2), 2000) 
 })
-const updaterToTask = m => { 
-   console.log('[updatedToTask]', m)
-   return Task.of(m.results)
+const updaterToTask = ({update, results}) => { 
+   const {s,p,o} = update
+   if(s) results.index[s][p] = o
+   return Task.of(results)
 }
 const transformToTask = m => {
-    console.log('[transformToTask]', {m, results: m.results, update: m.update})
     return Task.of(
         m.results.list.map(id => m.results.index[id])
                   .map(r => {

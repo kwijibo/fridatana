@@ -6,17 +6,13 @@ export const UpdateResults = tagged('update', 'results')
 export const UpdateStream = tagged('x')
 export const TransformResults = tagged('results')
 
-const unwrappedresult = { list: [], index: {keith: { name: "K", email: "k@k.com"}}}
-
 export const fetchQuery = query => {
     const Results = liftF(FetchQuery(query))
     const Updates = subscribeUpdates()
-    const UpdatedResults = Monad.do(function *(){
-        const update = yield Updates
-        const results = yield Results
-        return updateResults(update, results)
-    })
-    return UpdatedResults.chain(results => liftF(TransformResults(results)))
+    const UpdatedResults = lift((update, results)=>UpdateResults(update,results))(Updates, Results)
+    return UpdatedResults
+            .chain(liftF) //we have to lift the resulting type into a free monad - surely it should be already?
+            .chain(results => liftF(TransformResults(results)))
 }
 
 export const updateResults = (update, results) => liftF(UpdateResults(update, results))
