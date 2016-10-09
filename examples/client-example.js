@@ -9,6 +9,4 @@ const fetchApp = fetchQuery({type: 'Person'}).map(results => `<ul>
 </ul><script>${JSON.stringify(results)}</script>`)
 
 
-
-run(subscribeUpdates())
 run(fetchApp)
