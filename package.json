@@ -17,7 +17,8 @@
   "license": "ISC",
   "dependencies": {
     "daggy": "0.0.1",
-    "freeky": "DrBoolean/freeky"
+    "freeky": "DrBoolean/freeky",
+    "ramda": "^0.22.1"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
