@@ -8,7 +8,10 @@ const Val = tagged('a')
 const Add = tagged('x','y')
 
 const runApp = interpret([
-                          [Val, m => Task.of(m.a)],
+                          [Val, m => new Task((_,resolve)=> { 
+                              setTimeout(_=>resolve(m.a), 100) 
+                              setTimeout(_=>resolve(m.a+1), 200) 
+                          })],
                           [Add, m => Task.of(m.x + m.y)]
                         ])
 
@@ -16,11 +19,17 @@ const runApp = interpret([
 export const run = app => app.foldMap(runApp, Task.of).fork(console.error, console.log)
 
 //app
-const add = (x,y) => {
+
+const addWithDo = (x,y) => {
     const X = liftF(Val(x))
     const Y = liftF(Val(y))
-    return lift((x,y) => liftF(Add(x,y)))(X, Y)
+    return Monad.do(function *(){
+        const x = yield X
+        const y = yield Y
+        return liftF(Add(x,y))
+    })
+
 }
 
-run(add(1,2))
+run(addWithDo(1,2))
 
